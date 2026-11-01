@@ -1,0 +1,597 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Department of English, Sunamganj Government College. Student information, academic notices and results.">
+  <title>Department of English | Sunamganj Government College</title>
+
+  <style>
+    :root {
+      --navy: #102d46;
+      --blue: #174d70;
+      --gold: #d7a94b;
+      --light: #f4f7fa;
+      --text: #263746;
+      --muted: #647586;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--light);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .topbar {
+      background: #0b2033;
+      color: #e8eef3;
+      padding: 8px 6%;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    header {
+      background: var(--white);
+      padding: 17px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .logo {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--gold);
+      display: grid;
+      place-items: center;
+      font-weight: bold;
+      font-size: 20px;
+      border: 2px solid var(--gold);
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      color: var(--navy);
+      font-size: 18px;
+      line-height: 1.3;
+    }
+
+    .brand p { color: var(--muted); font-size: 13px; }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 19px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    nav a:hover { color: #b17d1e; }
+
+    .menu-button {
+      display: none;
+      border: 0;
+      background: var(--navy);
+      color: white;
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .hero {
+      background: linear-gradient(120deg, rgba(12,35,55,.96), rgba(23,77,112,.91));
+      color: white;
+      padding: 90px 8%;
+      text-align: center;
+    }
+
+    .hero .eyebrow {
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .hero h2 {
+      max-width: 850px;
+      margin: 15px auto;
+      font-size: clamp(30px, 5vw, 48px);
+      line-height: 1.2;
+    }
+
+    .hero p {
+      max-width: 720px;
+      margin: 0 auto 25px;
+      color: #e0e9f0;
+      font-size: 17px;
+    }
+
+    .button {
+      display: inline-block;
+      background: var(--gold);
+      color: #172b3b;
+      font-weight: bold;
+      padding: 12px 21px;
+      border-radius: 5px;
+      margin: 5px;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: white;
+      border: 1px solid #c6d3df;
+    }
+
+    .container {
+      width: min(1120px, 88%);
+      margin: auto;
+    }
+
+    section { padding: 65px 0; }
+
+    .section-heading {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .section-heading span {
+      color: #a87920;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+
+    .section-heading h2 {
+      color: var(--navy);
+      font-size: 30px;
+      margin: 5px 0;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      max-width: 650px;
+      margin: auto;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 35px;
+      align-items: center;
+    }
+
+    .about-text h3 {
+      color: var(--navy);
+      font-size: 23px;
+      margin-bottom: 12px;
+    }
+
+    .about-text p { margin-bottom: 12px; }
+
+    .info-panel {
+      background: white;
+      border-left: 4px solid var(--gold);
+      border-radius: 8px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.05);
+    }
+
+    .info-panel h3 { color: var(--navy); margin-bottom: 10px; }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      border: 1px solid #e4eaf0;
+      box-shadow: 0 4px 15px rgba(0,0,0,.035);
+    }
+
+    .card .number {
+      color: #b18129;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .card h3 { color: var(--navy); margin: 8px 0; }
+
+    .card p { color: var(--muted); font-size: 14px; }
+
+    .soft-section { background: #eaf0f5; }
+
+    .notice-box {
+      background: white;
+      border-radius: 8px;
+      padding: 25px;
+      text-align: center;
+      border: 1px solid #e1e7ed;
+    }
+
+    .notice-box p { color: var(--muted); }
+
+    .portal-box {
+      max-width: 720px;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin: auto;
+      box-shadow: 0 5px 22px rgba(0,0,0,.06);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: var(--navy);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cad5df;
+      border-radius: 5px;
+      background: white;
+      font-size: 15px;
+    }
+
+    .form-full { grid-column: 1 / -1; }
+
+    .portal-note {
+      margin-top: 15px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+    }
+
+    .contact-card {
+      padding: 25px;
+      border-radius: 8px;
+      background: white;
+      border: 1px solid #e4eaf0;
+    }
+
+    .contact-card h3 { color: var(--navy); margin-bottom: 12px; }
+
+    footer {
+      background: #0b2033;
+      color: #d9e3eb;
+      text-align: center;
+      padding: 28px 6%;
+      font-size: 14px;
+    }
+
+    footer strong { color: var(--gold); }
+
+    @media (max-width: 800px) {
+      header { flex-wrap: wrap; }
+      .menu-button { display: block; }
+      nav {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 0;
+      }
+      nav.show { display: flex; }
+      .about-grid, .contact-grid { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 540px) {
+      .topbar { justify-content: center; text-align: center; }
+      .brand h1 { font-size: 15px; }
+      .brand p { font-size: 11px; }
+      .logo { width: 45px; height: 45px; font-size: 16px; }
+      .hero { padding: 65px 6%; }
+      .hero p { font-size: 15px; }
+      .container { width: 90%; }
+      section { padding: 48px 0; }
+      .cards, .form-grid { grid-template-columns: 1fr; }
+      .form-full { grid-column: auto; }
+      .section-heading h2 { font-size: 25px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <span>Sunamganj Government College</span>
+    <span>Department of English | Sunamganj, Bangladesh</span>
+  </div>
+
+  <header>
+    <a class="brand" href="#home">
+      <div class="logo">ENG</div>
+      <div>
+        <h1>Department of English</h1>
+        <p>Sunamganj Government College</p>
+      </div>
+    </a>
+
+    <button class="menu-button" onclick="toggleMenu()" aria-label="Open menu">☰</button>
+
+    <nav id="mainNav">
+      <a href="#home" onclick="closeMenu()">Home</a>
+      <a href="#about" onclick="closeMenu()">About</a>
+      <a href="#programs" onclick="closeMenu()">Programs</a>
+      <a href="#faculty" onclick="closeMenu()">Faculty</a>
+      <a href="#notices" onclick="closeMenu()">Notices</a>
+      <a href="#portal" onclick="closeMenu()">Results</a>
+      <a href="#contact" onclick="closeMenu()">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="eyebrow">Welcome to our department</div>
+      <h2>Department of English</h2>
+      <p>
+        Sunamganj Government College
+        <br>
+        Promoting language, literature, knowledge and critical thinking.
+      </p>
+      <a class="button" href="#about">Explore Department</a>
+      <a class="button secondary" href="#portal">Student Result Portal</a>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <div class="section-heading">
+          <span>Who we are</span>
+          <h2>About the Department</h2>
+          <p>Learn about the academic activities and educational goals of our department.</p>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-text">
+            <h3>Welcome to the Department of English</h3>
+            <p>
+              The Department of English at Sunamganj Government College
+              is dedicated to the study of English language, literature,
+              communication and critical thinking.
+            </p>
+            <p>
+              This website is intended to provide students with academic
+              information, notices, course information and access to
+              published examination results.
+            </p>
+          </div>
+
+          <div class="info-panel">
+            <h3>Department Information</h3>
+            <p><strong>Institution:</strong> Sunamganj Government College</p>
+            <p><strong>Department:</strong> English</p>
+            <p><strong>Location:</strong> Sunamganj, Bangladesh</p>
+            <p><strong>Academic information:</strong> To be updated</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="soft-section" id="programs">
+      <div class="container">
+        <div class="section-heading">
+          <span>Academic activities</span>
+          <h2>Academic Programs</h2>
+          <p>Academic program details will be updated with verified institutional information.</p>
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <div class="number">PROGRAM 01</div>
+            <h3>Honours</h3>
+            <p>Four-year Honours program in English. Course and session details will be published here.</p>
+          </div>
+
+          <div class="card">
+            <div class="number">PROGRAM 02</div>
+            <h3>Masters Final</h3>
+            <p>Masters Final program information and academic notices will be added here.</p>
+          </div>
+
+          <div class="card">
+            <div class="number">STUDENT SERVICES</div>
+            <h3>Academic Support</h3>
+            <p>Student information, examination notices and result services will be organized here.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faculty">
+      <div class="container">
+        <div class="section-heading">
+          <span>Our educators</span>
+          <h2>Faculty Members</h2>
+          <p>Verified teacher names, designations and profile information will be added by the department.</p>
+        </div>
+
+        <div class="notice-box">
+          <h3>Faculty information is being prepared</h3>
+          <p>Official faculty profiles will be published after the department provides the verified information.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="soft-section" id="notices">
+      <div class="container">
+        <div class="section-heading">
+          <span>Stay informed</span>
+          <h2>Notice Board</h2>
+          <p>Official academic announcements and examination notices.</p>
+        </div>
+
+        <div class="notice-box">
+          <h3>No notices published yet</h3>
+          <p>New notices will appear here after they are added by an authorized department administrator.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="portal">
+      <div class="container">
+        <div class="section-heading">
+          <span>Student services</span>
+          <h2>Student Result Portal</h2>
+          <p>Published examination results will be made available through this portal.</p>
+        </div>
+
+        <div class="portal-box">
+          <form onsubmit="checkResult(event)">
+            <div class="form-grid">
+              <div>
+                <label for="session">Academic Session</label>
+                <select id="session" required>
+                  <option value="">Select session</option>
+                  <option>2022-2023</option>
+                  <option>2023-2024</option>
+                  <option>2024-2025</option>
+                  <option>2025-2026</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="program">Program</label>
+                <select id="program" required>
+                  <option value="">Select program</option>
+                  <option>Honours</option>
+                  <option>Masters Final</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="year">Year</label>
+                <select id="year" required>
+                  <option value="">Select year</option>
+                  <option>1st Year</option>
+                  <option>2nd Year</option>
+                  <option>3rd Year</option>
+                  <option>4th Year</option>
+                  <option>Masters Final</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="registration">Registration Number</label>
+                <input id="registration" type="text" placeholder="Enter registration number" required>
+              </div>
+
+              <div class="form-full">
+                <button class="button" type="submit">Search Result</button>
+              </div>
+            </div>
+          </form>
+
+          <p class="portal-note">
+            Note: This is the initial portal design. Result search, verification and PDF download
+            will work after the official result database is connected.
+          </p>
+          <p id="resultMessage" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="soft-section" id="contact">
+      <div class="container">
+        <div class="section-heading">
+          <span>Get in touch</span>
+          <h2>Contact the Department</h2>
+          <p>Official contact information will be added after verification.</p>
+        </div>
+
+        <div class="contact-grid">
+          <div class="contact-card">
+            <h3>Department Address</h3>
+            <p>Department of English</p>
+            <p>Sunamganj Government College</p>
+            <p>Sunamganj, Bangladesh</p>
+          </div>
+
+          <div class="contact-card">
+            <h3>Online Information</h3>
+            <p>College website:
+              <a href="https://sugc.edu.bd/" target="_blank" rel="noopener">sugc.edu.bd</a>
+            </p>
+            <p>Department email: To be officially confirmed</p>
+            <p>Phone: To be officially confirmed</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>Department of English</strong></p>
+    <p>Sunamganj Government College, Sunamganj, Bangladesh</p>
+    <p>© <span id="yearNow"></span> Department of English. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById("mainNav").classList.toggle("show");
+    }
+
+    function closeMenu() {
+      document.getElementById("mainNav").classList.remove("show");
+    }
+
+    function checkResult(event) {
+      event.preventDefault();
+      document.getElementById("resultMessage").textContent =
+        "The result database is not connected yet. Please check again after the department publishes the result service.";
+    }
+
+    document.getElementById("yearNow").textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
