@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Login - English Department</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      margin: 0;
+      padding: 25px;
+    }
+    .box {
+      max-width: 420px;
+      margin: 50px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 15px #0002;
+    }
+    h2 { text-align: center; color: #14532d; }
+    input, button {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      margin: 9px 0;
+      font-size: 16px;
+    }
+    button {
+      background: #166534;
+      color: white;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #message { text-align: center; color: #b91c1c; }
+    #dashboard { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="box" id="loginBox">
+  <h2>Admin Login</h2>
+  <p style="text-align:center">Department of English<br>Sunamganj Government College</p>
+
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email Address" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+  <p id="message"></p>
+</div>
+
+<div class="box" id="dashboard">
+  <h2>Admin Dashboard</h2>
+  <p id="welcome"></p>
+  <p>আপনি সফলভাবে লগইন করেছেন।</p>
+  <button id="logoutBtn">Logout</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://nyvnqrfbiorpfzstaxvb.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+
+const client = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+const message = document.getElementById("message");
+
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  message.textContent = "লগইন হচ্ছে...";
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  const { data, error } = await client.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  if (error) {
+    message.textContent = "লগইন হয়নি: " + error.message;
+    return;
+  }
+
+  const { data: profile, error: profileError } = await client
+    .from("user_profiles")
+    .select("full_name, role")
+    .eq("id", data.user.id)
+    .single();
+
+  if (profileError || !profile ||
+      !["super_admin", "admin"].includes(profile.role)) {
+    await client.auth.signOut();
+    message.textContent = "এই অ্যাকাউন্টের Admin অনুমতি নেই।";
+    return;
+  }
+
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
+  document.getElementById("welcome").textContent =
+    "স্বাগতম, " + (profile.full_name || "Admin");
+});
+
+document.getElementById("logoutBtn").addEventListener("click", async function() {
+  await client.auth.signOut();
+  location.reload();
+});
+</script>
+
+</body>
+</html>
