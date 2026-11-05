@@ -1,117 +1,473 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Login - English Department</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      margin: 0;
-      padding: 25px;
-    }
-    .box {
-      max-width: 420px;
-      margin: 50px auto;
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 3px 15px #0002;
-    }
-    h2 { text-align: center; color: #14532d; }
-    input, button {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 12px;
-      margin: 9px 0;
-      font-size: 16px;
-    }
-    button {
-      background: #166534;
-      color: white;
-      border: 0;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    #message { text-align: center; color: #b91c1c; }
-    #dashboard { display: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Department of English | Management</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f1f5f9;font-family:Arial,"Noto Sans Bengali",sans-serif;color:#172033}
+header{background:#123b63;color:white;padding:18px;text-align:center}
+main{max-width:1000px;margin:22px auto;padding:16px}
+.card{background:white;padding:22px;border-radius:12px;margin-bottom:18px;box-shadow:0 2px 10px #00000010}
+h2{margin-top:0;color:#123b63}
+input,select,button{width:100%;padding:11px;margin:7px 0;border:1px solid #cbd5e1;border-radius:7px;font-size:15px}
+button{background:#145a8d;color:white;border:0;cursor:pointer;font-weight:bold}
+button.secondary{background:#64748b}
+button:disabled{opacity:.5;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.hidden{display:none}
+.notice{padding:12px;background:#eff6ff;border-radius:7px;margin:12px 0}
+.error{color:#b91c1c}
+.success{color:#15803d}
+table{width:100%;border-collapse:collapse;margin-top:12px}
+td,th{border:1px solid #ddd;padding:8px;text-align:left}
+small{color:#64748b}
+</style>
 </head>
 <body>
 
-<div class="box" id="loginBox">
-  <h2>Admin Login</h2>
-  <p style="text-align:center">Department of English<br>Sunamganj Government College</p>
+<header>
+<h2 style="color:white;margin:0">Department of English</h2>
+<p>Sunamganj Government College</p>
+</header>
 
-  <form id="loginForm">
-    <input type="email" id="email" placeholder="Email Address" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <button type="submit">Login</button>
-  </form>
-  <p id="message"></p>
+<main>
+<section id="loginPanel" class="card">
+<h2>Login</h2>
+<p>আপনার নির্ধারিত ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করুন।</p>
+<input id="email" type="email" placeholder="ইমেইল ঠিকানা">
+<input id="password" type="password" placeholder="পাসওয়ার্ড">
+<button id="loginBtn" onclick="login()">লগইন করুন</button>
+<p id="loginMessage"></p>
+</section>
+
+<section id="adminPanel" class="hidden">
+<div class="card">
+<h2>Admin Dashboard</h2>
+<p id="adminWelcome"></p>
+<div class="notice">
+আপনি Admin হিসেবে লগইন করেছেন। প্রশাসনিক মডিউলগুলো পরবর্তী ধাপে যুক্ত করা হবে।
+</div>
+<button class="secondary" onclick="logout()">Logout</button>
+</div>
+</section>
+
+<section id="teacherPanel" class="hidden">
+<div class="card">
+<h2>Teacher Dashboard</h2>
+<p id="teacherWelcome"></p>
+<button class="secondary" onclick="logout()">Logout</button>
 </div>
 
-<div class="box" id="dashboard">
-  <h2>Admin Dashboard</h2>
-  <p id="welcome"></p>
-  <p>আপনি সফলভাবে লগইন করেছেন।</p>
-  <button id="logoutBtn">Logout</button>
+<div class="card">
+<h2>নম্বর এন্ট্রি</h2>
+
+<div class="grid">
+<div>
+<label>শিক্ষাবর্ষ</label>
+<select id="sessionSelect" onchange="loadCourses()">
+<option value="">শিক্ষাবর্ষ নির্বাচন</option>
+</select>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div>
+<label>প্রোগ্রাম</label>
+<select id="programSelect" onchange="loadCourses()">
+<option value="">নির্বাচন করুন</option>
+<option value="Honours">Honours</option>
+<option value="Masters">Masters</option>
+</select>
+</div>
+
+<div>
+<label>বর্ষ</label>
+<select id="yearSelect" onchange="loadCourses()">
+<option value="">বর্ষ নির্বাচন</option>
+<option value="1">১ম বর্ষ</option>
+<option value="2">২য় বর্ষ</option>
+<option value="3">৩য় বর্ষ</option>
+<option value="4">৪র্থ বর্ষ</option>
+</select>
+</div>
+
+<div>
+<label>কোর্স</label>
+<select id="courseSelect" onchange="loadStudents()">
+<option value="">কোর্স নির্বাচন</option>
+</select>
+</div>
+
+<div>
+<label>শিক্ষার্থী</label>
+<select id="studentSelect" onchange="loadExistingMarks()">
+<option value="">শিক্ষার্থী নির্বাচন</option>
+</select>
+</div>
+</div>
+
+<div id="schemeInfo" class="notice hidden"></div>
+
+<div id="marksArea" class="hidden">
+<h3>নম্বর প্রদান</h3>
+<div class="grid">
+<div>
+<label>১ম ইনকোর্স</label>
+<input id="incourse1" type="number" min="0" step="0.01">
+</div>
+<div>
+<label>২য় ইনকোর্স</label>
+<input id="incourse2" type="number" min="0" step="0.01">
+</div>
+<div>
+<label>উপস্থিতি (সর্বোচ্চ ৫)</label>
+<input id="attendance" type="number" min="0" max="5" step="0.01">
+</div>
+<div id="assignmentBox">
+<label>অ্যাসাইনমেন্ট (সর্বোচ্চ ৫)</label>
+<input id="assignment" type="number" min="0" max="5" step="0.01">
+</div>
+</div>
+
+<div class="notice">
+<p>ইনকোর্স গড়: <strong id="average">—</strong></p>
+<p>মোট নম্বর: <strong id="total">—</strong></p>
+<p>ফলাফল: <strong id="passStatus">—</strong></p>
+<small>সব প্রয়োজনীয় নম্বর দেওয়া হলে হিসাব দেখাবে।</small>
+</div>
+
+<button onclick="saveMarks()">নম্বর সংরক্ষণ করুন</button>
+<p id="saveMessage"></p>
+</div>
+</div>
+</section>
+</main>
+
 <script>
 const SUPABASE_URL = "https://nyvnqrfbiorpfzstaxvb.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_dLljkk9TMThhMLHXxn1Oeg_9ZJvGYTN";
+const SUPABASE_KEY = "sb_publishable_dLljkk9TMThhMLHXxn1Oeg_9ZJvGYTN";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const client = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+let currentUser = null;
+let currentProfile = null;
+let currentScheme = "new";
+let currentEnrollment = null;
+let currentCourse = null;
 
-const message = document.getElementById("message");
+const $ = id => document.getElementById(id);
 
-document.getElementById("loginForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
-  message.textContent = "লগইন হচ্ছে...";
+function message(id, text, type="") {
+  const el = $(id);
+  el.textContent = text;
+  el.className = type;
+}
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+async function login() {
+  message("loginMessage", "লগইন হচ্ছে...");
+  $("loginBtn").disabled = true;
 
-  const { data, error } = await client.auth.signInWithPassword({
-    email: email,
-    password: password
-  });
+  try {
+    const {data, error} = await db.auth.signInWithPassword({
+      email: $("email").value.trim(),
+      password: $("password").value
+    });
+    if (error) throw error;
+
+    currentUser = data.user;
+
+    const {data: profile, error: profileError} = await db
+      .from("user_profiles")
+      .select("full_name, role")
+      .eq("id", currentUser.id)
+      .single();
+
+    if (profileError) throw profileError;
+
+    currentProfile = profile;
+
+    $("loginPanel").classList.add("hidden");
+
+    if (profile.role === "super_admin" || profile.role === "admin") {
+      $("adminPanel").classList.remove("hidden");
+      $("adminWelcome").textContent = "স্বাগতম, " + (profile.full_name || "Admin");
+    } else if (profile.role === "teacher") {
+      $("teacherPanel").classList.remove("hidden");
+      $("teacherWelcome").textContent = "স্বাগতম, " + (profile.full_name || "Teacher");
+      await loadSessions();
+    } else {
+      throw new Error("এই অ্যাকাউন্টের অনুমতি নেই।");
+    }
+  } catch (error) {
+    message("loginMessage", error.message || "লগইন করা যায়নি।", "error");
+    await db.auth.signOut();
+  } finally {
+    $("loginBtn").disabled = false;
+  }
+}
+
+async function logout() {
+  await db.auth.signOut();
+  location.reload();
+}
+
+async function loadSessions() {
+  const {data, error} = await db
+    .from("academic_sessions")
+    .select("id, session_name")
+    .order("session_name", {ascending:false});
 
   if (error) {
-    message.textContent = "লগইন হয়নি: " + error.message;
+    alert("শিক্ষাবর্ষ লোড করা যায়নি: " + error.message);
     return;
   }
 
-  const { data: profile, error: profileError } = await client
-    .from("user_profiles")
-    .select("full_name, role")
-    .eq("id", data.user.id)
-    .single();
+  $("sessionSelect").innerHTML = '<option value="">শিক্ষাবর্ষ নির্বাচন</option>';
 
-  if (profileError || !profile ||
-      !["super_admin", "admin"].includes(profile.role)) {
-    await client.auth.signOut();
-    message.textContent = "এই অ্যাকাউন্টের Admin অনুমতি নেই।";
+  (data || []).forEach(s => {
+    const option = document.createElement("option");
+    option.value = s.id;
+    option.textContent = s.session_name;
+    $("sessionSelect").appendChild(option);
+  });
+}
+
+function getScheme() {
+  const program = $("programSelect").value;
+  const sessionText = $("sessionSelect").selectedOptions[0]?.textContent || "";
+  const startYear = parseInt(sessionText.split("-")[0], 10);
+
+  return program === "Honours" && startYear >= 2024 ? "new" : "old";
+}
+
+async function loadCourses() {
+  $("courseSelect").innerHTML = '<option value="">কোর্স নির্বাচন</option>';
+  $("studentSelect").innerHTML = '<option value="">শিক্ষার্থী নির্বাচন</option>';
+  $("marksArea").classList.add("hidden");
+
+  const program = $("programSelect").value;
+  const year = $("yearSelect").value;
+
+  if (!program || !year) return;
+
+  const {data, error} = await db
+    .from("courses")
+    .select("id, course_code, course_name")
+    .eq("program_level", program)
+    .eq("year_level", Number(year))
+    .order("course_code");
+
+  if (error) {
+    alert("কোর্স লোড করা যায়নি: " + error.message);
     return;
   }
 
-  document.getElementById("loginBox").style.display = "none";
-  document.getElementById("dashboard").style.display = "block";
-  document.getElementById("welcome").textContent =
-    "স্বাগতম, " + (profile.full_name || "Admin");
+  (data || []).forEach(course => {
+    const option = document.createElement("option");
+    option.value = course.id;
+    option.textContent = course.course_code + " - " + course.course_name;
+    $("courseSelect").appendChild(option);
+  });
+
+  currentScheme = getScheme();
+  $("schemeInfo").classList.remove("hidden");
+
+  $("schemeInfo").textContent = currentScheme === "new"
+    ? "নতুন পদ্ধতি: ইনকোর্স ১০+১০-এর গড়, উপস্থিতি ৫, অ্যাসাইনমেন্ট ৫। মোট ২০।"
+    : "পুরোনো পদ্ধতি: ইনকোর্স ১৫+১৫-এর গড়, উপস্থিতি ৫। মোট ২০।";
+
+  $("incourse1").max = currentScheme === "new" ? 10 : 15;
+  $("incourse2").max = currentScheme === "new" ? 10 : 15;
+
+  $("assignmentBox").classList.toggle("hidden", currentScheme === "old");
+  calculateMarks();
+}
+
+async function loadStudents() {
+  $("studentSelect").innerHTML = '<option value="">শিক্ষার্থী নির্বাচন</option>';
+  $("marksArea").classList.add("hidden");
+
+  const sessionId = $("sessionSelect").value;
+  const program = $("programSelect").value;
+  const year = Number($("yearSelect").value);
+  currentCourse = $("courseSelect").value;
+
+  if (!sessionId || !program || !year || !currentCourse) return;
+
+  const {data: enrollments, error} = await db
+    .from("student_enrollments")
+    .select("id, student_id, class_roll")
+    .eq("session_id", Number(sessionId))
+    .eq("program_level", program)
+    .eq("year_level", year)
+    .order("class_roll");
+
+  if (error) {
+    alert("শিক্ষার্থী তালিকা লোড করা যায়নি: " + error.message);
+    return;
+  }
+
+  if (!enrollments || enrollments.length === 0) {
+    alert("এই শিক্ষাবর্ষ ও বর্ষে এখনো কোনো শিক্ষার্থী ভর্তি করা হয়নি।");
+    return;
+  }
+
+  const studentIds = [...new Set(enrollments.map(e => e.student_id))];
+
+  const {data: students, error: studentError} = await db
+    .from("students")
+    .select("id, student_name_bn, student_name_en, registration_no")
+    .in("id", studentIds);
+
+  if (studentError) {
+    alert("শিক্ষার্থীর তথ্য পাওয়া যায়নি: " + studentError.message);
+    return;
+  }
+
+  const studentMap = new Map((students || []).map(s => [s.id, s]));
+
+  enrollments.forEach(e => {
+    const student = studentMap.get(e.student_id);
+    if (!student) return;
+
+    const option = document.createElement("option");
+    option.value = e.id;
+    option.textContent =
+      (e.class_roll || "—") + " | " +
+      (student.student_name_bn || student.student_name_en || "নাম নেই") +
+      " | " + (student.registration_no || "রেজি নেই");
+
+    $("studentSelect").appendChild(option);
+  });
+}
+
+async function loadExistingMarks() {
+  currentEnrollment = $("studentSelect").value;
+
+  if (!currentEnrollment || !currentCourse) {
+    $("marksArea").classList.add("hidden");
+    return;
+  }
+
+  $("marksArea").classList.remove("hidden");
+  ["incourse1","incourse2","attendance","assignment"].forEach(id => $(id).value = "");
+  message("saveMessage", "");
+
+  const {data, error} = await db
+    .from("course_marks")
+    .select("incourse_1, incourse_2, attendance, assignment")
+    .eq("enrollment_id", Number(currentEnrollment))
+    .eq("course_id", Number(currentCourse))
+    .maybeSingle();
+
+  if (error) {
+    message("saveMessage", "আগের নম্বর লোড করা যায়নি: " + error.message, "error");
+    return;
+  }
+
+  if (data) {
+    $("incourse1").value = data.incourse_1 ?? "";
+    $("incourse2").value = data.incourse_2 ?? "";
+    $("attendance").value = data.attendance ?? "";
+    $("assignment").value = data.assignment ?? "";
+  }
+
+  calculateMarks();
+}
+
+function numberValue(id) {
+  const value = $(id).value.trim();
+  return value === "" ? null : Number(value);
+}
+
+function calculateMarks() {
+  const a = numberValue("incourse1");
+  const b = numberValue("incourse2");
+  const attendance = numberValue("attendance");
+  const assignment = numberValue("assignment");
+
+  const average = a !== null && b !== null ? (a + b) / 2 : null;
+
+  $("average").textContent = average === null ? "—" : average.toFixed(2);
+
+  const complete = average !== null && attendance !== null &&
+    (currentScheme === "old" || assignment !== null);
+
+  if (!complete) {
+    $("total").textContent = "—";
+    $("passStatus").textContent = "—";
+    return;
+  }
+
+  const total = average + attendance +
+    (currentScheme === "new" ? assignment : 0);
+
+  const passed = currentScheme === "new"
+    ? average >= 4 && attendance >= 3 && assignment >= 3
+    : average >= 6 && attendance >= 3;
+
+  $("total").textContent = total.toFixed(2) + " / 20";
+  $("passStatus").textContent = passed ? "PASS" : "FAIL";
+}
+
+["incourse1","incourse2","attendance","assignment"].forEach(id => {
+  $(id).addEventListener("input", calculateMarks);
 });
 
-document.getElementById("logoutBtn").addEventListener("click", async function() {
-  await client.auth.signOut();
-  location.reload();
-});
+async function saveMarks() {
+  if (!currentEnrollment || !currentCourse) {
+    message("saveMessage", "আগে শিক্ষার্থী ও কোর্স নির্বাচন করুন।", "error");
+    return;
+  }
+
+  const a = numberValue("incourse1");
+  const b = numberValue("incourse2");
+  const attendance = numberValue("attendance");
+  const assignment = currentScheme === "new" ? numberValue("assignment") : null;
+
+  const maxIncourse = currentScheme === "new" ? 10 : 15;
+
+  if (a === null || b === null || attendance === null ||
+      (currentScheme === "new" && assignment === null)) {
+    message("saveMessage", "সব প্রয়োজনীয় নম্বর পূরণ করুন।", "error");
+    return;
+  }
+
+  if (a < 0 || a > maxIncourse || b < 0 || b > maxIncourse ||
+      attendance < 0 || attendance > 5 ||
+      (assignment !== null && (assignment < 0 || assignment > 5))) {
+    message("saveMessage", "নম্বর নির্ধারিত সীমার মধ্যে দিন।", "error");
+    return;
+  }
+
+  const payload = {
+    enrollment_id: Number(currentEnrollment),
+    course_id: Number(currentCourse),
+    assessment_scheme: currentScheme,
+    incourse_1: a,
+    incourse_2: b,
+    attendance: attendance,
+    assignment: assignment,
+    teacher_name: currentProfile.full_name || "",
+    created_by: currentUser.id,
+    updated_by: currentUser.id
+  };
+
+  message("saveMessage", "সংরক্ষণ হচ্ছে...");
+
+  const {error} = await db
+    .from("course_marks")
+    .upsert(payload, {onConflict:"enrollment_id,course_id"});
+
+  if (error) {
+    message("saveMessage", "সংরক্ষণ হয়নি: " + error.message, "error");
+    return;
+  }
+
+  calculateMarks();
+  message("saveMessage", "নম্বর সফলভাবে সংরক্ষিত হয়েছে।", "success");
+}
 </script>
-
 </body>
 </html>
